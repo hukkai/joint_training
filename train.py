@@ -55,14 +55,11 @@ def main():
     param_norm = [p for p in model.parameters() if len(p.shape) < 2]
     param_conv = [p for p in model.parameters() if len(p.shape) >= 2]
 
-    optimizer = torch.optim.SGD([{
-        'params': param_norm,
-        'weight_decay': 0.0
-    }, {
-        'params': param_conv,
-        'weight_decay': 5e-5
-    }],
-                                lr=0.01 / 64 * num_gpus * bs_video,
+    groups1 = {'params': param_norm, 'weight_decay': 1e-6}
+    groups2 = {'params': param_conv, 'weight_decay': 1e-4}
+
+    optimizer = torch.optim.SGD([groups1, groups2],
+                                lr=0.015 / 64 * num_gpus * bs_video,
                                 momentum=0.9)
 
     criterion = torch.nn.CrossEntropyLoss()
